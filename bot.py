@@ -7,23 +7,26 @@ import settings
 
 logging.basicConfig(filename="bot.log", level=logging.INFO)
 
+
 def greet_user(update, context):
-    print("Вызван /start")
     update.message.reply_text("Добро пожаловать, друг")
 
 
 def planet(update, context):
-    user_planet = update.message.text.split()
-    dt_now = datetime.now()
-    dt_now_str = dt_now.strftime('%Y/%m/%d')
-    planet = getattr(ephem, user_planet[1])()
-    planet.compute(dt_now_str)
-    update.message.reply_text(ephem.constellation(planet))
+    user_planet = " ".join(context.args).capitalize()
+    list_of_planets = str(ephem._libastro.builtin_planets())
+    if user_planet in list_of_planets:
+        dt_now = datetime.now()
+        dt_now_str = dt_now.strftime('%Y/%m/%d')
+        planet = getattr(ephem, user_planet)()
+        planet.compute(dt_now_str)
+        update.message.reply_text(ephem.constellation(planet))
+    else:
+        update.message.reply_text('Вы ввели несуществующую планету')
 
 
 def talk_to_me(update, context):
     text = update.message.text
-    print(text)
     update.message.reply_text(text)
 
 
@@ -40,9 +43,6 @@ def main():
     mybot.start_polling()
     mybot.idle()
 
+
 if __name__ == "__main__":
     main()
-
-    
-
-    
